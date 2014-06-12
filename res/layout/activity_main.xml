@@ -1,16 +1,82 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
     tools:context="com.ndnxr.bambimail.BambiMail"
     tools:ignore="MergeRootFrame" >
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/buttonsLL"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:onClick="start_service"
-        android:text="Launch Service!" />
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal" >
 
-</FrameLayout>
+        <Button
+            android:id="@+id/dateButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:onClick="showDatePickerDialog"
+            android:text="Date" />
+
+        <Button
+            android:id="@+id/timeButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:onClick="showTimePickerDialog"
+            android:text="Time" />
+
+        <Spinner
+            android:id="@+id/urgencySpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Urgency" />
+
+        <Button
+            android:id="@+id/sendButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/to"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonsLL"
+        android:hint="To" />
+
+    <EditText
+        android:id="@+id/subject"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/to"
+        android:hint="Subject" />
+
+    <ScrollView
+        android:id="@+id/messageSV"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/subject"
+        android:fillViewport="true" >
+
+        <EditText
+            android:id="@+id/message"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:autoLink="all"
+            android:gravity="left|top"
+            android:hint="Message"
+            android:inputType="textMultiLine" />
+    </ScrollView>
+
+</RelativeLayout>
