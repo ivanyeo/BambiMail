@@ -21,8 +21,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.ndnxr.bambi.BambiLib;
 import com.ndnxr.bambi.BambiLib.TASK_TYPE;
@@ -34,6 +36,14 @@ import com.ndnxr.bambi.mailtest.R;
 public class BambiMail extends ActionBarActivity implements
 		DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
+	// Local Variables
+	private int year = 0;
+	private int month = 0;
+	private int day = 0;
+	
+	private int hours = 0;
+	private int minutes = 0;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -77,6 +87,7 @@ public class BambiMail extends ActionBarActivity implements
 
 	public void send_email(View v) {
 		// Create email with attachment
+		/*
 		String attachment = null;
 		String filename = "smurf2.png";
 
@@ -88,16 +99,48 @@ public class BambiMail extends ActionBarActivity implements
 				"smtp.gmail.com", "465", "woot", "subject here", "message",
 				new String[] { "cs246rocks@gmail.com" },
 				new String[] { attachment });
+		*/
+		
+		// Get data
+		String toString = ((EditText) findViewById(R.id.to)).getText().toString();
+		String [] toArray = toString.split(",");
+		String subject = ((EditText) findViewById(R.id.subject)).getText().toString();
+		String message = ((EditText) findViewById(R.id.message)).getText().toString();
+		String urgency = String.valueOf(((Spinner) findViewById(R.id.urgencySpinner)).getSelectedItem());
+		URGENCY urgencyEnum = URGENCY.NORMAL;
+		Date deadline = null;
 
-		// Create Deadline
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
-		calendar.add(Calendar.MINUTE, 1);
-
-		Date deadline = calendar.getTime();
-
+		// Set Urgency and create Deadline (if any)
+		if (urgency.equals("Normal")) {
+			urgencyEnum = URGENCY.NORMAL;
+		} else if (urgency.equals("Schedule")) {
+			urgencyEnum = URGENCY.SCHEDULE;
+			
+			// Create Deadline ( if there is one )
+			if ( !(year == 0 && month == 0 && minutes == 0) ) {
+				Calendar calendar = Calendar.getInstance();
+				calendar.set(year, month, day, hours, minutes);
+				//calendar.setTime(new Date());
+				//calendar.add(Calendar.MINUTE, 1);
+		
+				deadline = calendar.getTime();
+			}
+			
+		} else if (urgency.equals("Urgent")) {
+			urgencyEnum = URGENCY.URGENT;
+		}
+		
+		Toast.makeText(this, urgency, Toast.LENGTH_LONG).show();
+		// Create email
+		Email email = new Email("cs246rocks@gmail.com", "cs202rocks",
+				"smtp.gmail.com", "465", "cs246rocks@gmail.com", subject, message,
+				toArray,
+				null);
+		
+		
+		
 		// Create a task
-		Task task = new Task(TASK_TYPE.EMAIL, URGENCY.SCHEDULE, deadline, email);
+		Task task = new Task(TASK_TYPE.EMAIL, urgencyEnum, deadline, email);
 
 		// Create instance of BambiLib
 		BambiLib bambiLib = new BambiLib(this);
@@ -109,11 +152,6 @@ public class BambiMail extends ActionBarActivity implements
 		bambiLib.shutdown();
 
 		G.Log("send_email() DONE!");
-	}
-
-	public void schedule_email(View v) {
-		// Intent intent = new Intent(this, ScheduleActivity.class);
-		// startActivity(intent);
 	}
 
 	public void showTimePickerDialog(View v) {
@@ -148,6 +186,11 @@ public class BambiMail extends ActionBarActivity implements
 			int dayOfMonth) {
 		// Local Variable
 		String month = "";
+		
+		// Update local variables
+		this.year = year;
+		this.month = monthOfYear;
+		this.day = dayOfMonth;
 
 		// Set button's date
 		Button dateButton = (Button) this.findViewById(R.id.dateButton);
@@ -162,10 +205,14 @@ public class BambiMail extends ActionBarActivity implements
 
 	@Override
 	public void onTimeSet(TimePicker arg0, int hourOfDay, int minute) {
+		// Update local variables
+		this.hours = hourOfDay;
+		this.minutes = minute;
+		
 		// Set button's date
 		Button timeButton = (Button) this.findViewById(R.id.timeButton);
 		
-		timeButton.setText(String.format("%d:%d", hourOfDay, minute));
+		timeButton.setText(String.format("%02d:%02d", hourOfDay, minute));
 	}
 
 }
